@@ -1,9 +1,6 @@
 <?php
 session_start();
-require_once 'connection.php';
-
-// $_SESSION['nameErr'] = $_SESSION['emailErr'] = $_SESSION['passwordErr'] = $_SESSION['phoneErr'] = "";
-// $name = $email = $password = "";
+require_once "connection.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($_POST["name"])) {
@@ -58,56 +55,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (empty($_SESSION['nameErr']) && empty($_SESSION['emailErr']) && empty($_SESSION['passwordErr']) && empty($_SESSION['phoneErr'])) {
         if (empty($_FILES["image"]["name"])) {
-            $image = "";
             $uploadOk = 1;
+            $sql = "UPDATE `users` SET `name` = '$_POST[name]', `email` = '$_POST[email]', `password` = '$_POST[password]', `phone_number` = '$_POST[phone]',
+                    `salary` = '$_POST[salary]', `role` = '$_POST[role]' WHERE `id` = $_POST[id]";
         } else {
             include "save_image.php";
             $image = $file_name;
+            $sql = "UPDATE `users` SET `image` = '$image', `name` = '$_POST[name]', `email` = '$_POST[email]', `password` = '$_POST[password]', `phone_number` = '$_POST[phone]',
+                    `salary` = '$_POST[salary]', `role` = '$_POST[role]' WHERE `id` = $_POST[id]";
         }
 
-        $sql = "INSERT INTO `users` (`image`, `name`,`email`, `password`, `phone_number`, `salary`, `role`) VALUES ('$image', '$name', '$email',
-                '$_POST[password]', '$phone', '$salary', '$role')";
         if ($uploadOk == 1) {
             if (mysqli_query($conn, $sql)) {
                 http_response_code(201);
-                if (!empty($_SESSION['id'])) {
-                    echo "<script type='text/javascript'>window.location.href = '../front-end/admin-dashboard.php'</script>";
-                } else {
-                    echo "<script type='text/javascript'>window.location.href = '../front-end/login.php'</script>";
-                }
+                echo "<script type='text/javascript'>window.location.href = '../front-end/admin-dashboard.php'</script>";
             } else {
                 http_response_code(422);
-                $_SESSION['error'] = "Error in registering user";
-                if (!empty($_SESSION['id'])) {
-                    echo "<script type='text/javascript'>window.location.href = '../front-end/admin-dashboard.php'</script>";
-                } else {
-                    echo "<script type='text/javascript'>window.location.href = '../front-end/register.php'</script>";
-                }
+                echo "<script type='text/javascript'>window.location.href = '../front-end/update.php?id=$_POST[id]'</script>";
             }
         } else {
-            echo "upload failed";
             http_response_code(422);
-            if (isset($_SESSION['id'])) {
-                // echo json_encode($_SESSION);
-                echo "<script type='text/javascript'>window.location.href = '../front-end/new-user.php'</script>";
-            } else {
-                // echo "register";
-                echo "<script type='text/javascript'>window.location.href = '../front-end/register.php'</script>";
-            }
+            echo "<script type='text/javascript'>window.location.href = '../front-end/update.php?id=$_POST[id]'</script>";
+            print_r($_SESSION);
         }
     } else {
         http_response_code(422);
-        if (isset($_SESSION['id'])) {
-            // echo json_encode($_SESSION);
-            echo "<script type='text/javascript'>window.location.href = '../front-end/new-user.php'</script>";
-        } else {
-            // echo "register";
-            echo "<script type='text/javascript'>window.location.href = '../front-end/register.php'</script>";
-        }
+        echo "<script type='text/javascript'>window.location.href = '../front-end/update.php?id=$_POST[id]'</script>";
     }
 }
 
-function test_input($data) {
+function test_input($data)
+{
     $data = trim($data);
     $data = stripslashes($data);
     $data = htmlspecialchars($data);
