@@ -1,7 +1,6 @@
 <?php
 require 'connection.php';
 
-
     // Fetch user
     $sql = "SELECT * FROM `users` WHERE `id` = '$_GET[id]'";
     $result = mysqli_query($conn, $sql);

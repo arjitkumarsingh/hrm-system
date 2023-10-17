@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="crud.js"></script>
 </head>
 
 <body>
@@ -20,6 +21,7 @@
             <input class="form-control" id="email" type="email" name="email" placeholder="xyz@example.com" aria-label="email id">
         </div>
         <?php
+        session_start();
         if (isset($_SESSION['emailErr'])) {
         ?>
             <div class="mb-3 text-danger">
@@ -44,7 +46,6 @@
         </div>
 
         <?php
-        session_start();
         if (!empty($_SESSION['error'])) {
         ?>
             <div class="mb-3 text-danger">
@@ -66,7 +67,6 @@
         </div>
         <div class="mb-3"><a href="forgot-password.php">Forgot Password</a></div>
     </form>
-    <script src="crud.js"></script>
 
 </body>
 

@@ -18,15 +18,13 @@
 
 <body>
     <?php
-
-use function PHPSTORM_META\type;
-
     date_default_timezone_set("Asia/Calcutta");   //India time (GMT+5:30)
     include "../back-end/get_user_record.php";
     ?>
 
     <div class="d-flex justify-content-between">
         <button class="btn btn-primary mx-5 my-3" id="attendance" data-bs-toggle="collapse" type="button" data-bs-target="#attendance-form">Add Attendance</button>
+        <a href="leave.php"><button class="btn btn-info bt-link mx-5 my-3" id="leave" type="button">Apply Leave</button></a>
         <a href="../back-end/logout.php"><button class="btn btn-danger bt-link mx-5 my-3" id="logout" type="button">Logout</button></a>
     </div>
 

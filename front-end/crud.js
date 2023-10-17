@@ -10,40 +10,153 @@ $(document).ready(function () {
         }
     });
 
-    $("#name").keyup(function () {
+
+    //============================= LEAVE =====================================
+
+    // from.min = new Date().toISOString().split("T")[0];
+    let todayDate = new Date().toISOString().split("T")[0];
+    let fromDate;
+    let toDate;
+    $("#from").attr("min", todayDate);
+
+    $("#from").on("change blur", function () {
+        if (validateFromDate()) {
+            $("#to").attr("min", fromDate);
+            getDateDifference();
+            validateForm();
+        }
+    });
+
+    $("#to").on("change blur", function () {
+        if (validateToDate()) {
+            $("#from").attr("max", toDate);
+            getDateDifference();
+            validateForm();
+        }
+    });
+
+    $(".ck-content").on("keyup blur", function () {
+        validateReason();
+    });
+
+    $("#leave-form").on("submit", function (e) {
+        return validateReason();
+    });
+
+    function getDateDifference() {
+        if (fromDate && toDate) {
+            let dateDiff = (Date.parse(toDate) - Date.parse(fromDate)) / (1000 * 60 * 60 * 24) + 1;
+            console.log(dateDiff);
+            $("#days").val(dateDiff);
+        }
+    }
+
+    function validateFromDate() {
+        fromDate = $("#from").val();
+        let regexDate = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
+        if (!regexDate.test(fromDate)) {
+            $("#fromErr-format").show();
+            return false;
+        } else if (fromDate < todayDate) {
+            $("#fromErr-format").hide();
+            $("#fromErr-past").show();
+            return false;
+        } else {
+            $("#fromErr-format").hide();
+            $("#fromErr-past").hide();
+            return true;
+        }
+    }
+    function validateToDate() {
+        toDate = $("#to").val();
+        let regexDate = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
+        if (!regexDate.test(toDate)) {
+            $("#toErr-format").show();
+            return false;
+        } else if (toDate < fromDate) {
+            $("#toErr-format").hide();
+            $("#toErr-past").show();
+            return false;
+        } else {
+            $("#toErr-format").hide();
+            $("#toErr-past").hide();
+            return true;
+        }
+    }
+    function validateReason() {
+        // let reasonValue = $("#reason").val();
+        let reasonValue = $(".ck-content").text();
+        console.log(reasonValue);
+        // let regex = /^[\w-':() ]*$/;
+        if (reasonValue.length == 0) {
+            $("#reasonErr-required").show();
+            // return false;
+            return validateForm();
+        } else if (reasonValue.length < 20) {
+            $("#reasonErr-required").hide();
+            $("#reasonErr-short").show();
+            // return false;
+            return validateForm();
+        // } else if (!regex.test(reasonValue)) {
+        //     $("#reasonErr-short").hide();
+        //     $("#reasonErr-invalid").show();
+        //     // return false;
+        //     return validateForm();
+        } else {
+            $("#reasonErr-required").hide();
+            $("#reasonErr-short").hide();
+            $("#reasonErr-invalid").hide();
+            // return true;
+            return validateForm();
+        }
+    }
+
+    function validateForm() {
+        let isValidFromDate = validateFromDate();
+        let isValidToDate = validateToDate();
+        // let isValidReason = validateReason();
+        if (isValidFromDate && isValidToDate) {
+            $("#submit").prop("disabled", false);
+            return true;
+        } else {
+            $("#submit").prop("disabled", true);
+            return false;
+        }
+    }
+
+    //=======================================================================
+
+
+    $("#name").on("keyup blur", function () {
         validateName();
     });
-    $("#email").keyup(function () {
+    $("#email").on("keyup blur", function () {
         validateEmail();
     });
-    $("#image").change(function (e) {
-        validateImage(e);
+    $("#image").change(function () {
+        validateImage();
     });
-    $("#password").keyup(function () {
+    $("#password").on("keyup blur", function () {
         validatePassword();
     });
-    $("#phone").keyup(function () {
+    $("#phone").on("keyup blur", function () {
         validatePhone();
     });
 
     function validateName() {
         let nameValue = $("#name").val();
         let regex = /^[a-zA-Z-' ]*$/;
-        if (nameValue.length == "") {
+        if (nameValue.length == 0) {
             $("#nameErr").html("*Name is required");
-            $("#submit").prop("disabled", true);
             return false;
         } else if (nameValue.length < 3) {
             $("#nameErr").html("*Name must be at least 3 characters long");
-            $("#submit").prop("disabled", true);
             return false;
         } else if (!regex.test(nameValue)) {
             $("#nameErr").html("*Only letters and white space allowed");
-            $("#submit").prop("disabled", true);
             return false;
         } else {
             $("#nameErr").html("<br>");
-            // $("#submit").prop("disabled", false);
             return true;
         }
     }
@@ -52,39 +165,36 @@ $(document).ready(function () {
         let regex = /^[a-zA-Z][a-zA-Z\d\w.]{2,30}@[a-zA-Z\d]{3,30}\.[a-zA-Z]{2,20}$/;
         if (emailValue.length == "") {
             $("#emailErr").html("*Email is required");
-            $("#submit").prop("disabled", true);
             return false;
         } else if (!regex.test(emailValue)) {
             $("#emailErr").html("*Invalid email format");
-            $("#submit").prop("disabled", true);
             return false;
         } else {
             $("#emailErr").html("<br>");
-            // $("#submit").prop("disabled", false);
             return true;
         }
     }
-    function validateImage(e) {
-        var file = e.currentTarget.files[0];
-        // var file = $(this)[0].files[0];
-        var name = file.name;
-        var extension = name.substr(name.lastIndexOf("."));
-        var size = Math.round(file.size / 1024);
-        console.log(size);
-        var allowedExtensionsRegx = /(\.jpg|\.png)$/i;
-        var isAllowed = allowedExtensionsRegx.test(extension);
-
+    function validateImage() {
+        // file = e.target.files[0];
+        // let file = $(event)[0].files[0];
+        let file = $("#image")[0]['files'][0];
+        if (file == undefined) {
+            $("#imageErr").html("<br>");
+            return true;
+        }
+        let name = file.name;
+        let extension = name.substr(name.lastIndexOf("."));
+        let size = Math.round(file.size / 1024);
+        let allowedExtensionsRegx = /(\.jpg|\.png)$/i;
+        let isAllowed = allowedExtensionsRegx.test(extension);
         if (!isAllowed) {
             $("#imageErr").html("*Image extension must be .jpg or .png");
-            $("#submit").prop("disabled", true);
             return false;
         } else if (size > 2048) {
             $("#imageErr").html("*Image size must be less than 2MB")
-            $("#submit").prop("disabled", true);
             return false;
         } else {
             $("#imageErr").html("<br>");
-            $("#submit").prop("disabled", false);
             return true;
         }
     }
@@ -93,15 +203,12 @@ $(document).ready(function () {
         let regex = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
         if (passwordValue.length == "") {
             $("#passwordErr").html("*Password is required");
-            $("#submit").prop("disabled", true);
             return false;
         } else if (!regex.test(passwordValue)) {
             $("#passwordErr").html("*Password must be a combination of symbol(!@#$%^&*), number, upper & lower case letter and minimum 8 characters long");
-            $("#submit").prop("disabled", true);
             return false;
         } else {
             $("#passwordErr").html("<br>");
-            // $("#submit").prop("disabled", false);
             return true;
         }
     }
@@ -110,58 +217,74 @@ $(document).ready(function () {
         let regex = /^[0-9]{10}$/;
         if (phoneValue.length == "") {
             $("#phoneErr").html("<br>");
-            $("#submit").prop("disabled", false);
             return true;
         } else if (!regex.test(phoneValue)) {
             $("#phoneErr").html("*Phon number must be 10 digits long");
-            $("#submit").prop("disabled", true);
             return false;
         } else {
             $("#phoneErr").html("<br>");
-            // $("#submit").prop("disabled", false);
             return true;
         }
     }
 
-    $("#new-user-form").submit(function () {
-        // if (!(validateName() && validateEmail() && validatePassword() && validatePhone())) {
-        //     return false;
-        // }
-        // return true;
-        let isNameValid = validateName();
-        let isEmailValid = validateEmail();
-        let isPasswordValid = validatePassword();
-        let isPhoneValid = validatePhone();
-        if (isNameValid && isEmailValid && isPasswordValid && isPhoneValid) {
-            // $("#submit").htm
+    $("#new-user-form").on("submit change", function (e) {
+        isNameValid = validateName();
+        isEmailValid = validateEmail();
+        isPasswordValid = validatePassword();
+        isPhoneValid = validatePhone();
+        if (isEmailValid && isPasswordValid && isPhoneValid && validateImage()) {
+            $("#submit").prop("disabled", false);
             return true;
+        } else {
+            $("#submit").prop("disabled", true);
+            return false;
         }
+    });
+
+    $("#registration-form").on("submit change", function () {
+        isNameValid = validateName();
+        isEmailValid = validateEmail();
+        isPasswordValid = validatePassword();
+        isPhoneValid = validatePhone();
+        if (isNameValid && isEmailValid && isPasswordValid && isPhoneValid) {
+            $("#submit").prop("disabled", false);
+            return true
+        }
+        $("#submit").prop("disabled", true);
         return false;
     });
 
-    $("#registration-form").submit(function () {
-        if (!(validateName() && validateEmail() && validatePassword() && validatePhone())) {
-            return false;
-        }
-        return true;
-    });
-
-    $("#login-form").submit(function () {
+    $("#login-form").on("submit change", function () {
         isEmailValid = validateEmail();
         isPasswordValid = validatePassword();
-        console.log("okok");
-        while (!(isEmailValid && isPasswordValid)) {
+        if (isEmailValid && isPasswordValid) {
+            $("#submit").prop("disabled", false);
+            return true
+        } else {
             $("#submit").prop("disabled", true);
-            $("#email").keyup(function () {
-                validateEmail();
-            });
-            $("#password").keyup(function () {
-                validatePassword();
-            })
-            // return false;
+            return false;
         }
-        return true;
     });
+
+    //=================================================
+
+
+    // InlineEditor
+    //     .create(document.querySelector('#reason'))
+    //     .catch(error => {
+    //         console.error(error);
+    //     });
+
+    // InlineEditor
+    //     .create(document.querySelector('#reason'))
+    //     .then(editor => {
+    //         console.log('Editor was initialized', editor);
+    //     })
+    //     .catch(err => {
+    //         console.error(err);
+    //     });
+
+    // CKEDITOR.inline("reason");
 
     // $("#attendance").click(function (e) {
     //     var time = new Date();

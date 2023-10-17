@@ -36,6 +36,7 @@
                     <th>Email</th>
                     <th>Password</th>
                     <th>Phone No.</th>
+                    <th>User Leaves</th>
                     <th>Salary</th>
                     <th>Role</th>
                     <th>Action</th>
@@ -57,6 +58,7 @@
                             <td><?php echo $user['email']; ?></td>
                             <td><?php echo $user['password']; ?></td>
                             <td><?php echo $user['phone_number']; ?></td>
+                            <td><a href="user-leaves.php?id=<?php echo $user['id']; ?>">See Leaves</a></td>
                             <td><?php echo $user['salary']; ?></td>
                             <td><?php
                                 if ($user['role'] == 1) {
@@ -76,7 +78,7 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan="8">Total number of Employees: <?php echo count($users); ?></th>
+                    <th colspan="10">Total number of Employees: <?php echo count($users); ?></th>
                 </tr>
             </tfoot>
         <?php
