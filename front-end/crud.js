@@ -35,12 +35,14 @@ $(document).ready(function () {
         }
     });
 
-    $(".ck-content").on("keyup blur", function () {
-        validateReason();
+    $(".ck-content").on("blur", function () {
+        // validateReason();
+        validateForm();
     });
 
     $("#leave-form").on("submit", function (e) {
-        return validateReason();
+        // return validateReason();
+        return validateForm();
     });
 
     function getDateDifference() {
@@ -55,15 +57,27 @@ $(document).ready(function () {
         fromDate = $("#from").val();
         let regexDate = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
         if (!regexDate.test(fromDate)) {
-            $("#fromErr-format").show();
+            // $("#fromErr-format").show();
+            toastr.error('invalid format', "*From Date", {
+                closeButton: true,
+                progressBar: true,
+                preventDuplicates: true,
+                positionClass: "toast-bottom-center"
+            });
             return false;
         } else if (fromDate < todayDate) {
-            $("#fromErr-format").hide();
-            $("#fromErr-past").show();
+            // $("#fromErr-format").hide();
+            // $("#fromErr-past").show();
+            toastr.error('invalid date', "*From Date", {
+                closeButton: true,
+                progressBar: true,
+                preventDuplicates: true,
+                positionClass: "toast-bottom-center"
+            });
             return false;
         } else {
-            $("#fromErr-format").hide();
-            $("#fromErr-past").hide();
+            // $("#fromErr-format").hide();
+            // $("#fromErr-past").hide();
             return true;
         }
     }
@@ -71,51 +85,75 @@ $(document).ready(function () {
         toDate = $("#to").val();
         let regexDate = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
         if (!regexDate.test(toDate)) {
-            $("#toErr-format").show();
+            // $("#toErr-format").show();
+            toastr.error('invalid format', "*To Date", {
+                closeButton: true,
+                progressBar: true,
+                preventDuplicates: true,
+                positionClass: "toast-bottom-center"
+            });
             return false;
         } else if (toDate < fromDate) {
-            $("#toErr-format").hide();
-            $("#toErr-past").show();
+            // $("#toErr-format").hide();
+            // $("#toErr-past").show();
+            toastr.error('invalid date', "*To Date", {
+                closeButton: true,
+                progressBar: true,
+                preventDuplicates: true,
+                positionClass: "toast-bottom-center"
+            });
             return false;
         } else {
-            $("#toErr-format").hide();
-            $("#toErr-past").hide();
+            // $("#toErr-format").hide();
+            // $("#toErr-past").hide();
             return true;
         }
     }
     function validateReason() {
         // let reasonValue = $("#reason").val();
         let reasonValue = $(".ck-content").text();
-        console.log(reasonValue);
         // let regex = /^[\w-':() ]*$/;
         if (reasonValue.length == 0) {
-            $("#reasonErr-required").show();
-            // return false;
-            return validateForm();
+            // $("#reasonErr-required").show();
+            console.log(reasonValue);
+            toastr.error('reason is required', "*Reason", {
+                closeButton: true,
+                progressBar: true,
+                preventDuplicates: true,
+                positionClass: "toast-bottom-center"
+            });
+            return false;
+            // return validateForm();
         } else if (reasonValue.length < 20) {
-            $("#reasonErr-required").hide();
-            $("#reasonErr-short").show();
-            // return false;
-            return validateForm();
-        // } else if (!regex.test(reasonValue)) {
-        //     $("#reasonErr-short").hide();
-        //     $("#reasonErr-invalid").show();
-        //     // return false;
-        //     return validateForm();
+            // $("#reasonErr-required").hide();
+            // $("#reasonErr-short").show();
+            toastr.error('reason is too short', "*Reason", {
+                closeButton: true,
+                progressBar: true,
+                preventDuplicates: true,
+                positionClass: "toast-bottom-center"
+            });
+            return false;
+            // return validateForm();
+            // } else if (!regex.test(reasonValue)) {
+            //     $("#reasonErr-short").hide();
+            //     $("#reasonErr-invalid").show();
+            //     // return false;
+            //     return validateForm();
         } else {
-            $("#reasonErr-required").hide();
-            $("#reasonErr-short").hide();
-            $("#reasonErr-invalid").hide();
-            // return true;
-            return validateForm();
+            // $("#reasonErr-required").hide();
+            // $("#reasonErr-short").hide();
+            // $("#reasonErr-invalid").hide();
+            return true;
+            // return validateForm();
         }
     }
 
     function validateForm() {
         let isValidFromDate = validateFromDate();
         let isValidToDate = validateToDate();
-        // let isValidReason = validateReason();
-        if (isValidFromDate && isValidToDate) {
+        let isValidReason = validateReason();
+        if (isValidFromDate && isValidToDate && isValidReason) {
             $("#submit").prop("disabled", false);
             return true;
         } else {
@@ -147,16 +185,34 @@ $(document).ready(function () {
         let nameValue = $("#name").val();
         let regex = /^[a-zA-Z-' ]*$/;
         if (nameValue.length == 0) {
-            $("#nameErr").html("*Name is required");
+            // $("#nameErr").html("*Name is required");
+            toastr.error('name is required', "*Name", {
+                closeButton: true,
+                progressBar: true,
+                preventDuplicates: true,
+                positionClass: "toast-bottom-center"
+            });
             return false;
         } else if (nameValue.length < 3) {
-            $("#nameErr").html("*Name must be at least 3 characters long");
+            // $("#nameErr").html("*Name must be at least 3 characters long");
+            toastr.error('name must be at least 3 characters long', "*Name", {
+                closeButton: true,
+                progressBar: true,
+                preventDuplicates: true,
+                positionClass: "toast-bottom-center"
+            });
             return false;
         } else if (!regex.test(nameValue)) {
-            $("#nameErr").html("*Only letters and white space allowed");
+            // $("#nameErr").html("*Only letters and white space allowed");
+            toastr.error('only letters and white space allowed', "*Name", {
+                closeButton: true,
+                progressBar: true,
+                preventDuplicates: true,
+                positionClass: "toast-bottom-center"
+            });
             return false;
         } else {
-            $("#nameErr").html("<br>");
+            // $("#nameErr").html("<br>");
             return true;
         }
     }
@@ -164,13 +220,25 @@ $(document).ready(function () {
         let emailValue = $("#email").val();
         let regex = /^[a-zA-Z][a-zA-Z\d\w.]{2,30}@[a-zA-Z\d]{3,30}\.[a-zA-Z]{2,20}$/;
         if (emailValue.length == "") {
-            $("#emailErr").html("*Email is required");
+            // $("#emailErr").html("*Email is required");
+            toastr.error('email is required', "*Email", {
+                closeButton: true,
+                progressBar: true,
+                preventDuplicates: true,
+                positionClass: "toast-bottom-center"
+            });
             return false;
         } else if (!regex.test(emailValue)) {
-            $("#emailErr").html("*Invalid email format");
+            // $("#emailErr").html("*Invalid email format");
+            toastr.error('invalid email format', "*Email", {
+                closeButton: true,
+                progressBar: true,
+                preventDuplicates: true,
+                positionClass: "toast-bottom-center"
+            });
             return false;
         } else {
-            $("#emailErr").html("<br>");
+            // $("#emailErr").html("<br>");
             return true;
         }
     }
@@ -188,13 +256,25 @@ $(document).ready(function () {
         let allowedExtensionsRegx = /(\.jpg|\.png)$/i;
         let isAllowed = allowedExtensionsRegx.test(extension);
         if (!isAllowed) {
-            $("#imageErr").html("*Image extension must be .jpg or .png");
+            // $("#imageErr").html("*Image extension must be .jpg or .png");
+            toastr.error('image extension must be .jpg or .png', "*Image", {
+                closeButton: true,
+                progressBar: true,
+                preventDuplicates: true,
+                positionClass: "toast-bottom-center"
+            });
             return false;
         } else if (size > 2048) {
-            $("#imageErr").html("*Image size must be less than 2MB")
+            // $("#imageErr").html("*Image size must be less than 2MB")
+            toastr.error('image size must be less than 2MB', "*Image", {
+                closeButton: true,
+                progressBar: true,
+                preventDuplicates: true,
+                positionClass: "toast-bottom-center"
+            });
             return false;
         } else {
-            $("#imageErr").html("<br>");
+            // $("#imageErr").html("<br>");
             return true;
         }
     }
@@ -202,13 +282,25 @@ $(document).ready(function () {
         let passwordValue = $("#password").val();
         let regex = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
         if (passwordValue.length == "") {
-            $("#passwordErr").html("*Password is required");
+            // $("#passwordErr").html("*Password is required");
+            toastr.error('password is required', "*Password", {
+                closeButton: true,
+                progressBar: true,
+                preventDuplicates: true,
+                positionClass: "toast-bottom-center"
+            });
             return false;
         } else if (!regex.test(passwordValue)) {
-            $("#passwordErr").html("*Password must be a combination of symbol(!@#$%^&*), number, upper & lower case letter and minimum 8 characters long");
+            // $("#passwordErr").html("*Password must be a combination of symbol(!@#$%^&*), number, upper & lower case letter and minimum 8 characters long");
+            toastr.error('password must be a combination of symbol(!@#$%^&*), number, upper & lower case letter and minimum 8 characters long', "*Password", {
+                closeButton: true,
+                progressBar: true,
+                preventDuplicates: true,
+                positionClass: "toast-bottom-center"
+            });
             return false;
         } else {
-            $("#passwordErr").html("<br>");
+            // $("#passwordErr").html("<br>");
             return true;
         }
     }
@@ -216,13 +308,19 @@ $(document).ready(function () {
         let phoneValue = $("#phone").val();
         let regex = /^[0-9]{10}$/;
         if (phoneValue.length == "") {
-            $("#phoneErr").html("<br>");
+            // $("#phoneErr").html("<br>");
             return true;
         } else if (!regex.test(phoneValue)) {
-            $("#phoneErr").html("*Phon number must be 10 digits long");
+            // $("#phoneErr").html("*Phon number must be 10 digits long");
+            toastr.error('phone number must be 10 digits long', "*Phone", {
+                closeButton: true,
+                progressBar: true,
+                preventDuplicates: true,
+                positionClass: "toast-bottom-center"
+            });
             return false;
         } else {
-            $("#phoneErr").html("<br>");
+            // $("#phoneErr").html("<br>");
             return true;
         }
     }

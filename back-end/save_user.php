@@ -2,9 +2,6 @@
 session_start();
 require_once 'connection.php';
 
-// $_SESSION['nameErr'] = $_SESSION['emailErr'] = $_SESSION['passwordErr'] = $_SESSION['phoneErr'] = "";
-// $name = $email = $password = "";
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($_POST["name"])) {
         $_SESSION['nameErr'] = "Name is required";

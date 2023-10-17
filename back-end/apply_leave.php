@@ -7,6 +7,8 @@ print_r($_POST);
 print_r($_SESSION);
 echo "</pre>";
 
+unset($_SESSION['fromErr'], $_SESSION['toErr'], $_SESSION['daysErr'], $_SESSION['reasonErr']);
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($_POST["from"])) {
         $_SESSION['fromErr'] = "From date is required";
